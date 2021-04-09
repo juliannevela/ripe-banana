@@ -19,10 +19,11 @@ describe('ripe-banana routes', () => {
       pob: `${faker.address.country()}`
     })
     expect(res.body).toEqual({
+      id: expect.any(Number),
       name: expect.any(String),
-      dob: expect.any(Date),
+      dob: expect.any(String),
       pob: expect.any(String)
     })
   })
-  
+
 });
