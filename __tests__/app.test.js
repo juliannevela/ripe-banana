@@ -59,22 +59,21 @@ describe('ripe-banana routes', () => {
   })
 
   it('GET returns one actor by id', async () => {
-    const actor = {
+    const {body} = await request(app)
+    .post('/api/v1/actors/create')
+    .send({
       name: `${faker.name.findName()}`,
       dob: `${faker.date.past()}`,
       pob: `${faker.address.country()}`
-    };
-    await request(app)
-    .post('/api/v1/actors/create')
-    .send(actor)
-
+      })
     const res = await request(app)
-    .get(`/api/v1/actors/${actor.id}`)
+    .get(`/api/v1/actors/${body.id}`)
 
     expect(res.body).toEqual({
-      ...actor,
-      id: expect.any(Number)
+      id: expect.any(Number),
+      name: expect.any(String),
+      dob: expect.any(String),
+      pob: expect.any(String)
     })
   })
-
 });
