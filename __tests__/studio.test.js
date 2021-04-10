@@ -4,18 +4,41 @@ const request = require('supertest');
 const app = require('../lib/app');
 const Studio = require('../lib/models/Studio');
 
+const seedStudio = {
+	name: `${faker.company.companyName()}`,
+	city: `${faker.address.city()}`,
+	state: `${faker.address.state(true)}`,
+	country: `${faker.address.country()}`,
+};
+
+const seedStudioArray = [
+	{
+		name: `${faker.company.companyName()}`,
+		city: `${faker.address.city()}`,
+		state: `${faker.address.state(true)}`,
+		country: `${faker.address.country()}`,
+	},
+	{
+		name: `${faker.company.companyName()}`,
+		city: `${faker.address.city()}`,
+		state: `${faker.address.state(true)}`,
+		country: `${faker.address.country()}`,
+	},
+	{
+		name: `${faker.company.companyName()}`,
+		city: `${faker.address.city()}`,
+		state: `${faker.address.state(true)}`,
+		country: `${faker.address.country()}`,
+	},
+];
+
 describe('ripe-banana routes', () => {
 	beforeEach(() => {
 		return db.sync({ force: true });
 	});
 
 	it('POST creates a new studio', async () => {
-		const studio = await Studio.create({
-			name: `${faker.company.companyName()}`,
-			city: `${faker.address.city()}`,
-			state: `${faker.address.state(true)}`,
-			country: `${faker.address.country()}`,
-		});
+		const studio = await Studio.create(seedStudio);
 
 		expect(studio.dataValues).toEqual({
 			id: expect.any(Number),
@@ -27,26 +50,7 @@ describe('ripe-banana routes', () => {
 	});
 
 	it('GET returns an array of allStudios', async () => {
-		await Studio.bulkCreate([
-			{
-				name: `${faker.company.companyName()}`,
-				city: `${faker.address.city()}`,
-				state: `${faker.address.state(true)}`,
-				country: `${faker.address.country()}`,
-			},
-			{
-				name: `${faker.company.companyName()}`,
-				city: `${faker.address.city()}`,
-				state: `${faker.address.state(true)}`,
-				country: `${faker.address.country()}`,
-			},
-			{
-				name: `${faker.company.companyName()}`,
-				city: `${faker.address.city()}`,
-				state: `${faker.address.state(true)}`,
-				country: `${faker.address.country()}`,
-			},
-		]);
+		await Studio.bulkCreate(seedStudioArray);
 
 		const { body } = await request(app).get('/api/v1/studios');
 
@@ -73,5 +77,16 @@ describe('ripe-banana routes', () => {
 				country: expect.any(String),
 			},
 		]);
+	});
+
+	it('GET:id returns a single studio with the given id', async () => {
+		const studio = await Studio.create(seedStudio);
+
+		const { body } = await request(app).get(`/api/v1/studios/${studio.id}`);
+
+		expect(body).toEqual({
+			...seedStudio,
+			id: expect.any(Number),
+		});
 	});
 });
