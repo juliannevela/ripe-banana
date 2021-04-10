@@ -22,4 +22,25 @@ describe('ripe-banana routes', () => {
 			company: expect.any(String),
 				});
 	});
+	it('GET returns all reviewers', async () => {
+		await Reviewer.bulkCreate([
+			{
+		name:`${faker.name.findName()}`,
+		company:`${faker.company.companyName()}`},
+			{
+		name:`${faker.name.findName()}`,
+		company:`${faker.company.companyName()}`}
+		])
+		const res = await request(app)
+		.get('/api/v1/reviewers');
+		expect(res.body).toEqual([{
+			id: expect.any(Number),
+			name: expect.any(String),
+			company: expect.any(String),
+				},
+			{id: expect.any(Number),
+				name: expect.any(String),
+				company: expect.any(String),
+					}]);
+	});
 });
