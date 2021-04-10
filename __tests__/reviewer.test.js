@@ -56,4 +56,18 @@ describe('ripe-banana routes', () => {
 			company: expect.any(String),
 				})
 	});
+	it('PATCH updates a reviewer by id', async () => {
+		const reviewer = await Reviewer.create(
+			{
+		name:`${faker.name.findName()}`,
+		company:`${faker.company.companyName()}`});
+		const res = await request(app)
+		.patch(`/api/v1/reviewers/${reviewer.id}`)
+		.send({name:'Julie Josie Vela Cantu'})
+		expect(res.body).toEqual({
+			id: reviewer.id,
+			name: 'Julie Josie Vela Cantu',
+			company: reviewer.companyName,
+				})
+	});
 	});
