@@ -27,8 +27,51 @@ describe('ripe-banana routes', () => {
 	});
 
 	it('GET returns an array of allStudios', async () => {
+		await Studio.bulkCreate([
+			{
+				name: `${faker.company.companyName()}`,
+				city: `${faker.address.city()}`,
+				state: `${faker.address.state(true)}`,
+				country: `${faker.address.country()}`,
+			},
+			{
+				name: `${faker.company.companyName()}`,
+				city: `${faker.address.city()}`,
+				state: `${faker.address.state(true)}`,
+				country: `${faker.address.country()}`,
+			},
+			{
+				name: `${faker.company.companyName()}`,
+				city: `${faker.address.city()}`,
+				state: `${faker.address.state(true)}`,
+				country: `${faker.address.country()}`,
+			},
+		]);
+
 		const { body } = await request(app).get('/api/v1/studios');
 
-		expect(body).toEqual([]);
+		expect(body).toEqual([
+			{
+				id: expect.any(Number),
+				name: expect.any(String),
+				city: expect.any(String),
+				state: expect.any(String),
+				country: expect.any(String),
+			},
+			{
+				id: expect.any(Number),
+				name: expect.any(String),
+				city: expect.any(String),
+				state: expect.any(String),
+				country: expect.any(String),
+			},
+			{
+				id: expect.any(Number),
+				name: expect.any(String),
+				city: expect.any(String),
+				state: expect.any(String),
+				country: expect.any(String),
+			},
+		]);
 	});
 });
