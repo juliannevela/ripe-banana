@@ -86,6 +86,7 @@ describe.skip('ripe-banana routes', () => {
 			pob: `${faker.address.country()}`,
 		});
 		const res = await request(app).get(`/api/v1/actors/${actor.id}`);
+
 		expect(res.body).toEqual({
 			id: expect.any(Number),
 			name: expect.any(String),

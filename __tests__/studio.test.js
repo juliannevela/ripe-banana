@@ -9,29 +9,26 @@ describe('ripe-banana routes', () => {
 		return db.sync({ force: true });
 	});
 
-	beforeEach(() => {
-		return Studio.create({
-			name: 'test',
-			city: 'test',
-			state: 'test',
-			country: 'test',
-		});
-	});
-
 	it('POST creates a new studio', async () => {
-		const { body } = await request(app).post('/api/v1/studios/create').send({
-			name: 'test',
-			city: 'test',
-			state: 'test',
-			country: 'test',
+		const studio = await Studio.create({
+			name: `${faker.company.companyName()}`,
+			city: `${faker.address.city()}`,
+			state: `${faker.address.state(true)}`,
+			country: `${faker.address.country()}`,
 		});
 
-		expect(body).toEqual({
+		expect(studio.dataValues).toEqual({
 			id: expect.any(Number),
 			name: expect.any(String),
 			city: expect.any(String),
 			state: expect.any(String),
 			country: expect.any(String),
 		});
+	});
+
+	it('GET returns an array of allStudios', async () => {
+		const { body } = await request(app).get('/api/v1/studios');
+
+		expect(body).toEqual([]);
 	});
 });
