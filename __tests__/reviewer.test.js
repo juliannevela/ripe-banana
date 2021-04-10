@@ -67,7 +67,7 @@ describe('ripe-banana routes', () => {
 		expect(res.body).toEqual({
 			id: reviewer.id,
 			name: 'Julie Josie Vela Cantu',
-			company: reviewer.companyName,
+			company: expect.any(String),
 				})
 	});
 	});
