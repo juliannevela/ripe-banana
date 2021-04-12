@@ -63,11 +63,22 @@ describe('ripe-banana routes', () => {
 		company:`${faker.company.companyName()}`});
 		const res = await request(app)
 		.patch(`/api/v1/reviewers/${reviewer.id}`)
-		.send({name:'Julie Josie Vela Cantu'})
+		.send({name:'Juli Josie Vela Cantu'})
 		expect(res.body).toEqual({
 			id: reviewer.id,
-			name: 'Julie Josie Vela Cantu',
+			name: 'Juli Josie Vela Cantu',
 			company: expect.any(String),
 				})
+	});
+	it('DESTROY deletes a reviewer by id', async () => {
+		const reviewer = await Reviewer.create(
+			{
+		name:`${faker.name.findName()}`,
+		company:`${faker.company.companyName()}`});
+
+
+		const res = await request(app)
+		.delete(`/api/v1/reviewers/${reviewer.id}`)
+		expect(res.body).toEqual({deleteSuccessful: '👍'})
 	});
 	});
