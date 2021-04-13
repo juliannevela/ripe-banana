@@ -4,7 +4,7 @@ const request = require('supertest');
 const app = require('../lib/app');
 const Reviewer = require('../lib/models/Reviewer');
 
-describe.skip('ripe-banana routes', () => {
+describe('ripe-banana routes', () => {
 	beforeEach(() => {
 		return db.sync({ force: true });
 	});

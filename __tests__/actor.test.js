@@ -1,13 +1,17 @@
+require('../lib/models/associations');
 const db = require('../lib/utils/db');
 const faker = require('faker');
-
 const request = require('supertest');
 const app = require('../lib/app');
-const Actor = require('../lib/models/Actor');
+const seed = require('../lib/utils/seed');
 
-describe.skip('ripe-banana routes', () => {
+describe('ripe-banana routes', () => {
 	beforeEach(() => {
 		return db.sync({ force: true });
+	});
+
+	beforeEach(() => {
+		return seed();
 	});
 
 	it('POST creates a new actor', async () => {
@@ -28,37 +32,22 @@ describe.skip('ripe-banana routes', () => {
 	});
 
 	it('GET returns all actors', async () => {
-		await Actor.bulkCreate([
+		const res = await request(app).get('/api/v1/actors');
+
+		expect(res.body).toEqual([
 			{
-				name: `${faker.name.findName()}`,
-				dob: `${faker.date.past()}`,
-				pob: `${faker.address.country()}`,
+				id: expect.any(Number),
+				name: expect.any(String),
 			},
 			{
-				name: `${faker.name.findName()}`,
-				dob: `${faker.date.past()}`,
-				pob: `${faker.address.country()}`,
+				id: expect.any(Number),
+				name: expect.any(String),
+			},
+			{
+				id: expect.any(Number),
+				name: expect.any(String),
 			},
 		]);
-
-		return request(app)
-			.get('/api/v1/actors')
-			.then((res) => {
-				expect(res.body).toEqual([
-					{
-						id: expect.any(Number),
-						name: expect.any(String),
-						dob: expect.any(String),
-						pob: expect.any(String),
-					},
-					{
-						id: expect.any(Number),
-						name: expect.any(String),
-						dob: expect.any(String),
-						pob: expect.any(String),
-					},
-				]);
-			});
 	});
 
 	// it('GET returns one actor by id', async () => {
@@ -81,18 +70,24 @@ describe.skip('ripe-banana routes', () => {
 	// })
 
 	it('GET return on actor by id', async () => {
-		const actor = await Actor.create({
-			name: `${faker.name.findName()}`,
-			dob: `${faker.date.past()}`,
-			pob: `${faker.address.country()}`,
-		});
-		const res = await request(app).get(`/api/v1/actors/${actor.id}`);
+		const res = await request(app).get(`/api/v1/actors/2`);
 
 		expect(res.body).toEqual({
-			id: expect.any(Number),
 			name: expect.any(String),
 			dob: expect.any(String),
 			pob: expect.any(String),
+			Films: [
+				{
+					id: expect.any(Number),
+					title: expect.any(String),
+					released: expect.any(Number),
+				},
+				{
+					id: expect.any(Number),
+					title: expect.any(String),
+					released: expect.any(Number),
+				},
+			],
 		});
 	});
 });
