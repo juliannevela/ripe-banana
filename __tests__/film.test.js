@@ -37,7 +37,6 @@ describe('ripe-banana routes', () => {
 	it('GET should get a list of films', async () => {
 		const res = await request(app).get('/api/v1/films');
 
-		console.log(res.body);
 		expect(res.body).toEqual([
 			{
 				id: expect.any(Number),
@@ -100,12 +99,12 @@ describe('ripe-banana routes', () => {
 		const res = await request(app).get('/api/v1/films/3');
 
 		expect(res.body).toEqual({
-			id: 3,
-			title: 'numquam ullam amet',
-			released: 1992,
+			id: expect.any(Number),
+			title: expect.any(String),
+			released: expect.any(Number),
 			Studio: {
-				id: 3,
-				name: 'Abernathy - Lindgren',
+				id: expect.any(Number),
+				name: expect.any(String),
 			},
 		});
 	});
