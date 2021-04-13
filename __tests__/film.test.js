@@ -4,6 +4,8 @@ const request = require('supertest');
 const app = require('../lib/app');
 const Film = require('../lib/models/Film');
 const Studio = require('../lib/models/Studio');
+const Actor = require('../lib/models/Actor');
+require('../lib/models/associations');
 
 const seedStudio = {
   name: `${faker.company.companyName()}`,
@@ -34,16 +36,37 @@ const seedStudioArray = [
 ];
 
 describe('ripe-banana routes', () => {
+
   beforeEach(() => {
     return db.sync({ force: true });
   });
+  let studio;
+  beforeEach(async () => {
+    studio = await Studio.create(seedStudio);
+  });
+  beforeEach(() => {
+    return Film.create({
+      title: `${faker.lorem.words(3)}`,
+      released: 2005,
+      StudioId: 1
+    });
+  });
+  beforeEach(() => {
+    return Actor.create({
+      name: `${faker.name.findName()}`,
+      dob: `${faker.date.past()}`,
+      pob: `${faker.address.country()}`,
+    });
+  });
 
   it('POST should creates a FILM', async () => {
-    const res = await Film.create({
+    const res = await request(app).post('/api/v1/films/create').send({
+      StudioId: 1,
       title: `${faker.lorem.words(3)}`,
       released: 2005,
     });
-    expect(res.dataValues).toEqual({
+    expect(res.body).toEqual({
+      StudioId: expect.any(Number),
       id: expect.any(Number),
       title: expect.any(String),
       released: 2005,
@@ -51,24 +74,16 @@ describe('ripe-banana routes', () => {
   });
 
   it('GET should get a list of films', async () => {
-    const studio = await Studio.create(seedStudio);
-
-    Film.create({
-      title: `${faker.lorem.words(3)}`,
-      released: 2005,
-
-    });
+ 
     const res = await request(app)
     .get('/api/v1/films')
 
-    expect(res.body).toEqual({
+    expect(res.body).toEqual([{
       id: expect.any(Number),
       title: expect.any(String),
-      studio: {
-        id: studio.dataValues.id,
-        name: studio.dataValues.name
-      }
-
-    })
+      released: expect.any(Number),
+      Studio: {id: studio.id,
+      name: studio.name}
+    }])
   })
 });
