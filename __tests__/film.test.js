@@ -1,3 +1,4 @@
+require('../lib/models/associations');
 const db = require('../lib/utils/db');
 const faker = require('faker');
 const request = require('supertest');
@@ -5,85 +6,107 @@ const app = require('../lib/app');
 const Film = require('../lib/models/Film');
 const Studio = require('../lib/models/Studio');
 const Actor = require('../lib/models/Actor');
-require('../lib/models/associations');
-
-const seedStudio = {
-  name: `${faker.company.companyName()}`,
-  city: `${faker.address.city()}`,
-  state: `${faker.address.state(true)}`,
-  country: `${faker.address.country()}`,
-};
-
-const seedStudioArray = [
-  {
-    name: `${faker.company.companyName()}`,
-    city: `${faker.address.city()}`,
-    state: `${faker.address.state(true)}`,
-    country: `${faker.address.country()}`,
-  },
-  {
-    name: `${faker.company.companyName()}`,
-    city: `${faker.address.city()}`,
-    state: `${faker.address.state(true)}`,
-    country: `${faker.address.country()}`,
-  },
-  {
-    name: `${faker.company.companyName()}`,
-    city: `${faker.address.city()}`,
-    state: `${faker.address.state(true)}`,
-    country: `${faker.address.country()}`,
-  },
-];
+const seed = require('../lib/utils/seed');
 
 describe('ripe-banana routes', () => {
+	beforeEach(() => {
+		return db.sync({ force: true });
+	});
 
-  beforeEach(() => {
-    return db.sync({ force: true });
-  });
-  let studio;
-  beforeEach(async () => {
-    studio = await Studio.create(seedStudio);
-  });
-  beforeEach(() => {
-    return Film.create({
-      title: `${faker.lorem.words(3)}`,
-      released: 2005,
-      StudioId: 1
-    });
-  });
-  beforeEach(() => {
-    return Actor.create({
-      name: `${faker.name.findName()}`,
-      dob: `${faker.date.past()}`,
-      pob: `${faker.address.country()}`,
-    });
-  });
+	beforeEach(() => {
+		return seed();
+	});
 
-  it('POST should creates a FILM', async () => {
-    const res = await request(app).post('/api/v1/films/create').send({
-      StudioId: 1,
-      title: `${faker.lorem.words(3)}`,
-      released: 2005,
-    });
-    expect(res.body).toEqual({
-      StudioId: expect.any(Number),
-      id: expect.any(Number),
-      title: expect.any(String),
-      released: 2005,
-    });
-  });
+	it('POST should creates a FILM', async () => {
+		const res = await request(app)
+			.post('/api/v1/films/create')
+			.send({
+				StudioId: 1,
+				title: `${faker.lorem.words(3)}`,
+				released: 2005,
+			});
 
-  it('GET should get a list of films', async () => {
- 
-    const res = await request(app)
-    .get('/api/v1/films')
+		expect(res.body).toEqual({
+			StudioId: expect.any(Number),
+			id: expect.any(Number),
+			title: expect.any(String),
+			released: expect.any(Number),
+		});
+	});
 
-    expect(res.body).toEqual([{
-      id: expect.any(Number),
-      title: expect.any(String),
-      released: expect.any(Number),
-      Studio: {id: studio.id,
-      name: studio.name}
-    }])
-  })
+	it('GET should get a list of films', async () => {
+		const res = await request(app).get('/api/v1/films');
+
+		console.log(res.body);
+		expect(res.body).toEqual([
+			{
+				id: expect.any(Number),
+				title: expect.any(String),
+				released: expect.any(Number),
+				Studio: {
+					id: expect.any(Number),
+					name: expect.any(String),
+				},
+			},
+			{
+				id: expect.any(Number),
+				title: expect.any(String),
+				released: expect.any(Number),
+				Studio: {
+					id: expect.any(Number),
+					name: expect.any(String),
+				},
+			},
+			{
+				id: expect.any(Number),
+				title: expect.any(String),
+				released: expect.any(Number),
+				Studio: {
+					id: expect.any(Number),
+					name: expect.any(String),
+				},
+			},
+			{
+				id: expect.any(Number),
+				title: expect.any(String),
+				released: expect.any(Number),
+				Studio: {
+					id: expect.any(Number),
+					name: expect.any(String),
+				},
+			},
+			{
+				id: expect.any(Number),
+				title: expect.any(String),
+				released: expect.any(Number),
+				Studio: {
+					id: expect.any(Number),
+					name: expect.any(String),
+				},
+			},
+			{
+				id: expect.any(Number),
+				title: expect.any(String),
+				released: expect.any(Number),
+				Studio: {
+					id: expect.any(Number),
+					name: expect.any(String),
+				},
+			},
+		]);
+	});
+
+	it('GET:id should get a film by its id', async () => {
+		const res = await request(app).get('/api/v1/films/3');
+
+		expect(res.body).toEqual({
+			id: 3,
+			title: 'numquam ullam amet',
+			released: 1992,
+			Studio: {
+				id: 3,
+				name: 'Abernathy - Lindgren',
+			},
+		});
+	});
 });
