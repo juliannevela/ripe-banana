@@ -18,6 +18,7 @@ describe.skip('ripe-banana routes', () => {
 				dob: `${faker.date.past()}`,
 				pob: `${faker.address.country()}`,
 			});
+
 		expect(res.body).toEqual({
 			id: expect.any(Number),
 			name: expect.any(String),

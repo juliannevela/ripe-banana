@@ -1,92 +1,102 @@
+require('../lib/models/associations');
 const db = require('../lib/utils/db');
 const faker = require('faker');
 const request = require('supertest');
 const app = require('../lib/app');
-const Studio = require('../lib/models/Studio');
+const seed = require('../lib/utils/seed');
 
-const seedStudio = {
-  name: `${faker.company.companyName()}`,
-  city: `${faker.address.city()}`,
-  state: `${faker.address.state(true)}`,
-  country: `${faker.address.country()}`,
-};
+describe('ripe-banana routes', () => {
+	beforeEach(() => {
+		return db.sync({ force: true });
+	});
 
-const seedStudioArray = [
-  {
-    name: `${faker.company.companyName()}`,
-    city: `${faker.address.city()}`,
-    state: `${faker.address.state(true)}`,
-    country: `${faker.address.country()}`,
-  },
-  {
-    name: `${faker.company.companyName()}`,
-    city: `${faker.address.city()}`,
-    state: `${faker.address.state(true)}`,
-    country: `${faker.address.country()}`,
-  },
-  {
-    name: `${faker.company.companyName()}`,
-    city: `${faker.address.city()}`,
-    state: `${faker.address.state(true)}`,
-    country: `${faker.address.country()}`,
-  },
-];
+	beforeEach(() => {
+		return seed();
+	});
 
-describe.skip('ripe-banana routes', () => {
-  beforeEach(() => {
-    return db.sync({ force: true });
-  });
+	it('POST creates a new studio', async () => {
+		const res = await request(app)
+			.post('/api/v1/studios/create')
+			.send({
+				name: `${faker.company.companyName}`,
+				city: `${faker.address.city()}`,
+				state: `${faker.address.state(true)}`,
+				country: `${faker.address.country()}`,
+			});
 
-  it('POST creates a new studio', async () => {
-    const studio = await Studio.create(seedStudio);
+		expect(res.body).toEqual({
+			id: expect.any(Number),
+			name: expect.any(String),
+			city: expect.any(String),
+			state: expect.any(String),
+			country: expect.any(String),
+		});
+	});
 
-    expect(studio.dataValues).toEqual({
-      id: expect.any(Number),
-      name: expect.any(String),
-      city: expect.any(String),
-      state: expect.any(String),
-      country: expect.any(String),
-    });
-  });
+	it('GET returns an array of allStudios', async () => {
+		const { body } = await request(app).get('/api/v1/studios');
 
-  it('GET returns an array of allStudios', async () => {
-    await Studio.bulkCreate(seedStudioArray);
+		expect(body).toEqual([
+			{
+				id: expect.any(Number),
+				name: expect.any(String),
+				city: expect.any(String),
+				state: expect.any(String),
+				country: expect.any(String),
+			},
+			{
+				id: expect.any(Number),
+				name: expect.any(String),
+				city: expect.any(String),
+				state: expect.any(String),
+				country: expect.any(String),
+			},
+			{
+				id: expect.any(Number),
+				name: expect.any(String),
+				city: expect.any(String),
+				state: expect.any(String),
+				country: expect.any(String),
+			},
+			{
+				id: expect.any(Number),
+				name: expect.any(String),
+				city: expect.any(String),
+				state: expect.any(String),
+				country: expect.any(String),
+			},
+			{
+				id: expect.any(Number),
+				name: expect.any(String),
+				city: expect.any(String),
+				state: expect.any(String),
+				country: expect.any(String),
+			},
+			{
+				id: expect.any(Number),
+				name: expect.any(String),
+				city: expect.any(String),
+				state: expect.any(String),
+				country: expect.any(String),
+			},
+		]);
+	});
 
-    const { body } = await request(app).get('/api/v1/studios');
+	it('GET:id returns a single studio with the given id', async () => {
+		const res = await request(app).get('/api/v1/studios/3');
 
-    expect(body).toEqual([
-      {
-        id: expect.any(Number),
-        name: expect.any(String),
-        city: expect.any(String),
-        state: expect.any(String),
-        country: expect.any(String),
-      },
-      {
-        id: expect.any(Number),
-        name: expect.any(String),
-        city: expect.any(String),
-        state: expect.any(String),
-        country: expect.any(String),
-      },
-      {
-        id: expect.any(Number),
-        name: expect.any(String),
-        city: expect.any(String),
-        state: expect.any(String),
-        country: expect.any(String),
-      },
-    ]);
-  });
-
-  it('GET:id returns a single studio with the given id', async () => {
-    const studio = await Studio.create(seedStudio);
-
-    const { body } = await request(app).get(`/api/v1/studios/${studio.id}`);
-
-    expect(body).toEqual({
-      ...seedStudio,
-      id: expect.any(Number),
-    });
-  });
+		expect(res.body).toEqual({
+			id: 3,
+			name: expect.any(String),
+			city: expect.any(String),
+			state: expect.any(String),
+			country: expect.any(String),
+			Films: [
+				{
+					id: expect.any(Number),
+					title: expect.any(String),
+				},
+			],
+		});
+	});
 });
